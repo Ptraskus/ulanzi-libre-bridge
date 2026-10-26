@@ -60,3 +60,8 @@ release/install-smoke/
 *.dump
 Thumbs.db
 Desktop.ini
+
+# Root-level photos are local source material; publish reviewed images in assets/.
+/*.jpeg
+/*.jpg
+/*.png
