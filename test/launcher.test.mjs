@@ -128,3 +128,27 @@ Write-Output $selectedNode.Source
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("scheduled hidden launcher uses the shared launcher and preserves failure exit codes", { skip: !windows }, async () => {
+  const root = await mkdtemp(join(tmpdir(), "ulanzi hidden launch "));
+  try {
+    const launcher = join(root, "iniciar-oculto.vbs");
+    await copyFile(join(projectRoot, "scripts", "iniciar-oculto.vbs"), launcher);
+    await writeFile(join(root, "launch-app.ps1"), String.raw`
+param([switch]$OpenPanel, [switch]$Console)
+$result = @{ openPanel = [bool]$OpenPanel; console = [bool]$Console } | ConvertTo-Json
+[IO.File]::WriteAllText((Join-Path $PSScriptRoot 'launch-result.json'), $result)
+exit 7
+`);
+    const scriptHost = join(process.env.SystemRoot ?? "C:\\Windows", "System32", "cscript.exe");
+    for (const openPanel of [false, true]) {
+      const result = spawnSync(scriptHost, ["//B", "//NoLogo", launcher, ...(openPanel ? ["/OpenPanel"] : [])], {
+        encoding: "utf8", timeout: 15_000, windowsHide: true,
+      });
+      assert.equal(result.status, 7, `${result.stdout}\n${result.stderr}`);
+      assert.deepEqual(JSON.parse(await readFile(join(root, "launch-result.json"), "utf8")), {
+        openPanel, console: true,
+      });
+    }
+  } finally { await rm(root, { recursive: true, force: true }); }
+});

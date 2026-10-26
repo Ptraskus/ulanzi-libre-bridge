@@ -848,7 +848,7 @@ export async function run(argv = process.argv.slice(2)) {
         health.tc001.lastError = null;
         await publishRuntimeStatus(state, lastReading, health, pushStartedAt);
         try {
-          await awtrix.detectMode(stopController.signal);
+          await awtrix.prepareConnection(stopController.signal);
           state = buildCycleDisplayState(
             lastReading,
             sourceFailed,
@@ -892,6 +892,7 @@ export async function run(argv = process.argv.slice(2)) {
           );
           await observeCurrentAlarmState(new Date());
           tc001Failed = true;
+          awtrix.noteConnectionFailure(error);
           health.tc001.state = "error";
           health.tc001.lastError = safeErrorMessage(error);
           logger.error(`TC001: ${safeErrorMessage(error)}`);

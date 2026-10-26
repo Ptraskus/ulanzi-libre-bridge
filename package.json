@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "Local Windows companion that displays CGM readings from Nightscout or an authorized JSON source on Ulanzi TC001 with AWTRIX.",
+  "description": "Windows app that displays Nightscout glucose readings and trends on an Ulanzi TC001 with AWTRIX.",
   "engines": {
     "node": ">=22"
   },

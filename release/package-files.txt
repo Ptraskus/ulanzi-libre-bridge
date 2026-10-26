@@ -16,6 +16,7 @@ PRIVACY.md
 assets/ulanzi-glucose.ico
 assets/ulanzi-tc001-display.jpeg
 src/awtrix-client.mjs
+src/awtrix-discovery.mjs
 src/config.mjs
 src/config-editor.mjs
 src/config-editor-cli.mjs

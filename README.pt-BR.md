@@ -1,50 +1,42 @@
 ﻿# Ulanzi Glucose Bridge
 
-**Sua glicemia em números grandes, com a seta de tendência ao lado, no Ulanzi TC001.**
-
 [English — documentação completa](README.md) · [Relatar problema](https://github.com/Ptraskus/ulanzi-glucose-bridge/issues) · [Releases](https://github.com/Ptraskus/ulanzi-glucose-bridge/releases)
 
-Veja a glicemia e sua tendência de relance no relógio. O Ulanzi Glucose Bridge é um aplicativo para Windows que busca a leitura no seu Nightscout e a envia ao TC001 pela rede local. Também aceita uma fonte JSON autorizada para integrações próprias.
+O Ulanzi Glucose Bridge é um aplicativo para Windows que exibe a glicemia e a tendência do seu Nightscout em um Ulanzi TC001 com AWTRIX. Ele consulta seu site Nightscout e envia as atualizações ao relógio pela rede local.
 
 ![Ulanzi TC001 exibindo 113 em números grandes e uma seta horizontal à direita](assets/ulanzi-tc001-display.jpeg)
 
-*Foto do relógio em uso: o valor e a seta dividem o visor, com destaque para a leitura.*
+## Recursos
 
-**Windows 10 1809+ / Windows 11 · Node.js 22+ · Inglês como padrão, português disponível · mg/dL ou mmol/L · [Licença MIT](LICENSE)**
+- **Números grandes e seta de tendência.** No AWTRIX NG, os dígitos ocupam as oito linhas do visor. O AWTRIX 3 também é compatível, usando texto e símbolos de tendência.
+- **Cores por faixa de glicemia.** As leituras mudam de cor conforme os limites configurados. Leituras indisponíveis ou antigas mostram **SEM DADO**.
+- **Assistente de configuração e painel no Windows.** Conecte o Nightscout, encontre o relógio, teste as conexões e confira a última leitura. Há opções em inglês e português do Brasil, com leituras em **mg/dL** ou **mmol/L**.
+- **Alertas sonoros e mostrador flutuante opcionais.** Configure alertas no relógio ou mantenha a leitura visível em uma pequena janela no computador.
 
-[Ir para o passo a passo](#passo-a-passo-no-windows) · [Resolver um problema](#privacidade-e-suporte)
+**O computador precisa ficar ligado, sem suspender, conectado e com o aplicativo em execução para continuar enviando leituras ao relógio.** Fechar o painel mantém o aplicativo na bandeja do Windows.
 
-## O que esta versão oferece
+**Windows 10 1809+ / Windows 11 · Node.js 22+ · [Licença MIT](LICENSE)**
 
-- **Números que usam toda a altura do visor.** No AWTRIX NG, os dígitos são desenhados pixel a pixel e ocupam as 8 linhas da tela de 32 × 8 pixels. Isso dá destaque ao valor e facilita a leitura de relance.
-- **Seta grande ao lado da glicemia.** A tendência tem um desenho próprio em uma área de até 7 × 8 pixels. A posição acompanha a largura do valor, com espaço entre números e seta para manter os dois legíveis.
-- **Espaço dedicado ao essencial.** O conjunto de números e seta é posicionado conforme o espaço disponível. O visor mostra o valor e a tendência, sem gastar espaço com o nome da unidade; você escolhe mg/dL ou mmol/L no aplicativo.
-- **Cores para identificar a faixa.** Valor e seta mudam de cor conforme os limites configurados. Quando a leitura está indisponível ou antiga, o aplicativo mostra `SEM DADO`.
-- **Configuração por janelas, em português.** O assistente orienta a conexão, procura o relógio e testa a fonte. Depois, o painel reúne ajustes, diagnóstico e recuperação de configuração.
-- **Recursos opcionais para o dia a dia.** Mostrador flutuante no Windows e alertas sonoros configuráveis. O processamento acontece no seu computador, sem conta própria do aplicativo, anúncios ou telemetria do projeto.
+Instale pelo ZIP do código-fonte seguindo o [passo a passo no Windows](#passo-a-passo-no-windows). Se houver algum problema, consulte [Privacidade e suporte](#privacidade-e-suporte).
 
-**Para usar o desenho de números grandes e seta descrito acima, o relógio precisa estar com AWTRIX NG.** O AWTRIX 3 também é compatível, mas recebe a leitura em modo texto e a aparência pode ser diferente.
-
-> Uso complementar: este aplicativo não é um dispositivo médico. Continue usando os aplicativos oficiais, seus alarmes e os métodos habituais de monitoramento. Não use o TC001 como única referência para decisões de tratamento. Os limites iniciais são padrões do software, não recomendações clínicas.
+> Este é um visor complementar, não um dispositivo médico. Continue usando os aplicativos oficiais e seus alarmes; não use o relógio como única referência para decisões de tratamento. Os limites iniciais são padrões do software, não recomendações clínicas.
 
 ## Antes de começar
 
 | Você precisa de | Em palavras simples |
 | --- | --- |
-| Um computador Windows | Windows 10 versão 1809 ou mais recente, ou Windows 11. Ele executa o aplicativo e precisa ficar ligado, sem suspender, para continuar enviando as leituras. |
+| Um computador Windows | Windows 10 versão 1809 ou mais recente, ou Windows 11. |
 | Um Ulanzi TC001 com AWTRIX | AWTRIX é o software instalado dentro do relógio, também chamado de firmware. O software original da Ulanzi não é compatível. O assistente orienta o preparo se necessário. |
 | Computador e relógio na mesma rede local | O TC001 recebe os dados pelo Wi-Fi. O computador pode usar Wi-Fi ou cabo, desde que consiga se comunicar com o relógio. |
 | Nightscout já recebendo suas leituras | É o site que reúne os dados do seu sensor. Tenha o endereço do site e, se exigido, um token de acesso ou `API_SECRET` — a credencial usada para permitir a leitura. |
 
 O caminho dos dados é: **sensor → Nightscout → aplicativo no Windows → relógio**. A conexão do sensor ao Nightscout precisa estar funcionando antes; este aplicativo cuida do trecho entre a fonte e o relógio. Ele não se conecta diretamente ao sensor nem pede a senha da conta do fabricante.
 
-**Ainda não tem Nightscout?** Consulte o [guia de integração](GUIA-NIGHTSCOUT.md), em inglês, antes de configurar leituras reais. Quem já tem outra integração pode usar uma fonte JSON autorizada. Para apenas conhecer o funcionamento, há uma demonstração no final deste documento.
+Se ainda não tem Nightscout, consulte o [guia de integração](GUIA-NIGHTSCOUT.md), em inglês. O aplicativo não cria um servidor Nightscout nem configura o envio de dados do sensor.
 
 ## Passo a passo no Windows
 
 Para configurar pelo assistente, você não precisa programar, usar Git, digitar comandos ou executar `npm install`.
-
-> O download público é o código-fonte em ZIP. Ainda não há instalador Windows assinado publicado. O caminho abaixo permite abrir o aplicativo a partir da pasta extraída.
 
 ### 1. Instale o Node.js uma vez
 
@@ -94,11 +86,13 @@ Se aparecer `SEM DADO`, confira a conexão e o horário da última leitura na fo
 - **Para parar o aplicativo:** use **Encerrar** no menu do ícone da bandeja.
 - **Para mudar ajustes:** use o painel e clique em **Salvar e aplicar**. Para refazer a conexão, use **Conexões** ou abra `Configure.cmd`.
 
+Após uma queda de energia ou de rede, deixe o aplicativo aberto: ele continua tentando reconectar. No AWTRIX NG, use o endereço real `http://<nome-do-relogio>.local` para não depender do IP atribuído pelo roteador. Se a resolução desse nome falhar, o aplicativo procura o mesmo nome e porta pela descoberta AWTRIX na rede local, confirma a identidade do dispositivo e recalcula a validade da leitura antes de enviar. Um IP informado diretamente ainda precisa de reserva no roteador para permanecer estável. A descoberta depende da comunicação UDP local; redes de convidados e firewalls podem bloqueá-la. A inicialização automática do Windows, quando habilitada, começa depois que você entra na sua conta.
+
 ## Compatibilidade com sensores
 
-A aplicação lê o formato padrão do Nightscout, independentemente da marca do sensor de glicose (CGM). Outros sensores podem ser usados quando seu uploader — o programa que envia as leituras — ou integração já fornece dados atuais e válidos ao Nightscout. A ponte utiliza valor, horário e tendência; não depende de metadados específicos do fabricante. Consulte a [documentação de uploaders do Nightscout](https://nightscout.github.io/uploader/setup/) para preparar essa conexão.
+A compatibilidade depende dos dados que chegam ao Nightscout. O aplicativo lê glicemia, horário e tendência pela API padrão, independentemente da marca do sensor. Seu uploader — o programa que envia as leituras — ou integração já precisa estar fornecendo dados atuais e válidos ao Nightscout. Nem todas as combinações de sensor e uploader foram testadas com este projeto.
 
-Essa compatibilidade depende da fonte de dados e não significa que todos os modelos tenham sido testados fisicamente. Preparar Nightscout e seu uploader é uma etapa separada. Um endpoint JSON autorizado também é aceito, no formato descrito no [README em inglês](README.md#sources-and-reading-states).
+Consulte o [guia de conexão](GUIA-NIGHTSCOUT.md) e a [documentação de uploaders do Nightscout](https://nightscout.github.io/uploader/setup/) para preparar essa integração. O aplicativo também aceita uma fonte JSON própria, no formato descrito no [README em inglês](README.md#sources-and-reading-states).
 
 ## Idioma, unidade e preferências
 

@@ -1,6 +1,7 @@
 import { tr } from "./i18n.mjs";
 import { BridgeError, HttpError } from "./errors.mjs";
 import { fetchJson, fetchOk, fetchResponse } from "./http.mjs";
+import { awtrixDiscoveryTarget, discoverAwtrixHost } from "./awtrix-discovery.mjs";
 
 function integerSeconds(milliseconds) {
   return Math.max(1, Math.ceil(milliseconds / 1000));
@@ -208,11 +209,13 @@ export function awtrix3Payload(state, config) {
 }
 
 export class AwtrixClient {
-  constructor(config) {
+  constructor(config, { discoverHost = discoverAwtrixHost } = {}) {
     this.config = config;
     this.host = config.awtrix.host;
     this.mode = config.awtrix.api === "auto" ? null : config.awtrix.api;
     this.timeoutMs = config.requestTimeoutMs;
+    this.discoverHost = discoverHost;
+    this.reconnectPending = false;
     this.headers = { accept: "application/json" };
     if (config.awtrix.username || config.awtrix.password) {
       const credentials = Buffer.from(
@@ -225,6 +228,54 @@ export class AwtrixClient {
 
   url(path) {
     return new URL(path, `${this.host}/`);
+  }
+
+  noteConnectionFailure(error) {
+    if (error?.code === "HTTP_NETWORK" || error?.code === "HTTP_TIMEOUT") {
+      this.reconnectPending = true;
+    }
+  }
+
+  // Run recovery before the caller rebuilds the reading and its expiry. Never
+  // replay a failed display write or sound command with an old payload.
+  async prepareConnection(signal) {
+    const target = this.config.awtrix.api === "3" ? null : awtrixDiscoveryTarget(this.config.awtrix.host);
+    const reconnect = this.reconnectPending || this.host !== this.config.awtrix.host;
+    if (reconnect) {
+      this.host = this.config.awtrix.host;
+      this.mode = this.config.awtrix.api === "auto" ? null : this.config.awtrix.api;
+      this.reconnectPending = false;
+    }
+    try {
+      if (reconnect && target && this.mode) {
+        await fetchOk(this.url("api/v1/version"), {
+          headers: this.headers, timeoutMs: this.timeoutMs, signal,
+        });
+      }
+      return await this.detectMode(signal);
+    } catch (error) {
+      if (!target || signal?.aborted || !["HTTP_NETWORK", "HTTP_TIMEOUT"].includes(error?.code)) throw error;
+      let recoveredHost;
+      try {
+        recoveredHost = await this.discoverHost(this.config.awtrix.host, { signal });
+      } catch {
+        if (signal?.aborted) {
+          throw new BridgeError(tr("clock discovery was cancelled", "busca do relogio cancelada"), {
+            code: "HTTP_ABORTED", retryable: false,
+          });
+        }
+        // Keep the original connection error; the normal polling loop retries.
+        throw error;
+      }
+      if (!recoveredHost) throw error;
+      const { data: device } = await fetchJson(new URL("/api/v1/device", recoveredHost), {
+        headers: this.headers, timeoutMs: this.timeoutMs, signal,
+      });
+      if (device?.boardType !== "awtrixng" || typeof device.hostname !== "string" || device.hostname.toLowerCase() !== target.hostname) throw error;
+      this.host = recoveredHost;
+      this.mode = "ng";
+      return this.mode;
+    }
   }
 
   async detectMode(signal) {

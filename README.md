@@ -1,38 +1,29 @@
 ﻿# Ulanzi Glucose Bridge
 
-**Your glucose reading and trend arrow, large and easy to see on an Ulanzi TC001.**
-
 [Português (Brasil)](README.pt-BR.md) · [Report an issue](https://github.com/Ptraskus/ulanzi-glucose-bridge/issues) · [Releases](https://github.com/Ptraskus/ulanzi-glucose-bridge/releases)
 
-See your glucose reading at a glance on the clock. This Windows app takes the readings already available on your Nightscout site and sends the value and trend arrow to the TC001 over your local network. A guided setup walks you through connecting them.
+Ulanzi Glucose Bridge is a Windows app that displays your Nightscout glucose reading and trend on an Ulanzi TC001 running AWTRIX. It reads your existing Nightscout site and sends updates to the clock over your local network.
 
 ![Ulanzi TC001 showing a large 113 and a right-pointing trend arrow](assets/ulanzi-tc001-display.jpeg)
 
-*Photo of the clock in use: a large glucose value and a clearly separated trend arrow.*
+## Features
 
-## Why use this version?
+- **Large digits and a trend arrow.** On AWTRIX NG, digits use all eight rows of the display. AWTRIX 3 is also supported, using text and trend symbols.
+- **Configurable range colors.** Readings change color according to your thresholds. Missing or stale readings show **NO DATA**.
+- **Windows setup wizard and dashboard.** Connect Nightscout, find the clock, test connections and check the latest reading. English and Brazilian Portuguese are available, with readings in **mg/dL** or **mmol/L**.
+- **Optional sound alerts and floating display.** Configure alerts on the clock or keep the reading visible in a small desktop window.
 
-- **Large numbers that use the full display height.** On AWTRIX NG, the digits are drawn pixel by pixel at 8 pixels tall, using all 8 rows of the TC001's 32 × 8 display.
-- **A prominent arrow beside the reading.** The arrow has its own 7 × 8 pixel grid. Its shape varies with the trend, with spacing to keep it distinct from the number.
-- **Space focused on the reading.** The number and arrow are positioned together according to the width of the value. The unit label stays off the clock display, leaving room for the value and trend; choose mg/dL or mmol/L in the app.
-- **Colors that show the configured range.** The number and arrow change color according to your settings. An unavailable or old reading shows **NO DATA**.
-- **Setup through buttons and forms.** Choose the language, connect Nightscout, find the clock and test the connections without typing terminal commands.
-- **Useful controls on the computer.** Check reading and connection status, open an optional floating display, choose mg/dL or mmol/L and configure optional sound alerts.
-- **No project account or subscription.** The app runs locally and uses the data source you already have.
+**The computer must stay on, awake and connected, with the app running, for readings to keep reaching the clock.** Closing the dashboard leaves the app running in the Windows notification area.
 
-The custom large-digit layout described above is used with **AWTRIX NG**. **AWTRIX 3** is also supported, using text mode; its appearance can differ. Sensor compatibility depends on current, valid readings reaching your source; see [CGM compatibility](#cgm-compatibility).
+**Windows 10 1809+ / Windows 11 · Node.js 22+ · [MIT license](LICENSE)**
 
-**Windows 10 1809+ / Windows 11 · Node.js 22+ · English by default, Brazilian Portuguese available · mg/dL or mmol/L · [MIT license](LICENSE)**
+Install from the source ZIP using the [Windows setup steps](#step-by-step-on-windows). See [Troubleshooting](#troubleshooting) if you get stuck.
 
-> This is an early release. The public download currently provides source code; a signed Windows installer is not yet published. Follow the source ZIP instructions below. Build scripts and a bundled-runtime package format are available for maintainers, but an internally built installer is not a signed public release.
-
-> This is a supplementary display, not a medical device. Keep using your official apps, their alarms and your usual monitoring tools. Do not use this app or the TC001 as your only basis for treatment decisions. Initial thresholds are software defaults, not clinical recommendations.
-
-[Go to the setup steps](#step-by-step-on-windows) · [Solve a problem](#troubleshooting)
+> This is a supplementary display, not a medical device. Keep using your official apps and alarms; do not use the clock as your only basis for treatment decisions. Initial thresholds are software defaults, not clinical recommendations.
 
 ## Before you begin
 
-There are three parts: **Nightscout** is the website supplying your readings, **the bridge** is this app on your computer, and **AWTRIX** is the software running on the clock. The bridge does not connect directly to your sensor.
+**Nightscout** supplies the readings, this app sends them to the clock, and **AWTRIX** is the firmware that displays them. The bridge does not connect directly to your sensor.
 
 | What you need | In plain language |
 | --- | --- |
@@ -41,8 +32,6 @@ There are three parts: **Nightscout** is the website supplying your readings, **
 | An Ulanzi TC001 with AWTRIX | Use AWTRIX NG for the large-digit layout, or AWTRIX 3 for text mode. The original Ulanzi software is not supported. The wizard includes guidance if you still need to prepare the clock. |
 | A Nightscout site already showing current readings | Open your site in the browser and check that readings are arriving. Have its address and access token or `API_SECRET` ready if required. An authorized JSON source is also supported. |
 | A shared local network | The computer and clock need to communicate, usually through the same home router. Guest Wi-Fi can block this even when both devices have internet access. |
-
-**The computer must stay on, awake and connected, with the app running, for readings to keep reaching the clock.** Closing the app's panel is fine; shutting down or putting the computer to sleep stops delivery.
 
 If you do not have a working Nightscout site yet, start with the [Nightscout setup guide](GUIA-NIGHTSCOUT.md). Installing this bridge does not create a Nightscout server or configure the connection between your sensor and Nightscout.
 
@@ -76,7 +65,7 @@ Use **Next** to move through the screens. The table below follows their order; b
 | Step | What to do |
 | --- | --- |
 | Language | Choose **English** or **Português (Brasil)**. |
-| Prepare the clock | If AWTRIX is installed and connected to Wi-Fi, select that option and confirm completion. Otherwise, follow the preparation guidance and the official AWTRIX link. Installing AWTRIX replaces the clock's software and settings: back up first and use a USB data cable. The bridge does not install firmware automatically. |
+| Prepare the clock | If AWTRIX is installed and connected to Wi-Fi, select that option and confirm completion. Otherwise, follow the preparation guidance and the [official AWTRIX NG flasher](https://blueforcer.github.io/awtrix-ng/getting-started/flashing/). Installing AWTRIX replaces the clock's software and settings: back up first and use a USB data cable. The bridge does not install firmware automatically. |
 | Choose the source | Select **Nightscout (recommended)** to use your existing Nightscout readings. |
 | Connect Nightscout | Enter the main HTTPS address you open in your browser, such as `https://my-nightscout.example`. This is an example: use your own address, without `/api/v1/...` or credentials. Choose the appropriate access method and paste the token into its separate field, or choose `API_SECRET` and enter the original secret. Use public access only if your site allows it. |
 | Test the source | Click **Test Nightscout** and wait for confirmation that it connected and found a reading before continuing. Check the reading's time on your Nightscout site too: connecting successfully does not guarantee fresh data. |
@@ -97,24 +86,22 @@ Open **`Start.cmd`** whenever you want to run the app. It stays in the Windows n
 
 Keep the computer awake and connected to the source and TC001. Use the dashboard to check the latest reading, its age and connection status. You can change display settings and optional alerts later, without repeating the entire initial setup.
 
+After a power or network outage, leave the app running: it keeps retrying. For AWTRIX NG, configure the clock's actual `http://<hostname>.local` address so a changed DHCP address does not require setup again. If local name resolution fails, the bridge uses AWTRIX discovery on the local network and accepts only the matching hostname and port, then checks the device identity. It rebuilds the reading and its expiry before sending. An IP address entered directly still needs a router reservation to remain stable. Automatic discovery requires local UDP communication; it does not bypass guest-network isolation or a firewall. Windows automatic startup, when enabled, begins after you sign in.
+
 `Configure.cmd` opens the setup wizard directly. The original Portuguese commands, `configurar.cmd` and `iniciar.cmd`, remain available for compatibility. `iniciar.cmd` runs the bridge in a visible console; it does not open the dashboard.
 
 ## CGM compatibility
 
-The bridge uses Nightscout's standard glucose-reading API; it does not identify or restrict the sensor manufacturer. A CGM can be used when its uploader or integration already provides current, valid glucose readings to your Nightscout instance. The bridge reads the value, timestamp and trend, without depending on manufacturer-specific device metadata. See Nightscout's [uploader documentation](https://nightscout.github.io/uploader/setup/) for the source side of that connection.
+Compatibility depends on the data reaching Nightscout. The bridge reads the glucose value, timestamp and trend from its standard API, regardless of sensor brand. Your sensor's uploader or integration must already be sending current, valid readings to Nightscout; individual sensor and uploader combinations have not all been tested with this bridge.
 
-This is compatibility through the data source, not a claim that every sensor or uploader has been physically tested with the bridge. The application does not pair with a sensor or sign in to a manufacturer's cloud account. Installing and maintaining a sensor uploader or Nightscout server is a separate task. An authorized JSON endpoint is another supported input. See [Nightscout setup](GUIA-NIGHTSCOUT.md).
-
-If the TC001 needs compatible firmware, setup links to the [official AWTRIX NG flashing tool](https://blueforcer.github.io/awtrix-ng/getting-started/flashing/). The browser asks you to choose a serial port and confirm installation; read its instructions and back up the device first.
+See the [Nightscout connection guide](GUIA-NIGHTSCOUT.md) and Nightscout's [uploader documentation](https://nightscout.github.io/uploader/setup/) for setup. For custom integrations, the app also accepts a [JSON endpoint](#sources-and-reading-states).
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A["Nightscout / authorized JSON"] -->|"Read latest glucose"| B["Bridge on Windows"]
-    M["Mock source"] --> B
+    A["Nightscout or custom JSON source"] -->|"Latest reading and trend"| B["Bridge on Windows"]
     B -->|"Local HTTP"| C["Ulanzi TC001 with AWTRIX"]
-    B --> D["Dashboard, optional alerts and diagnostics"]
 ```
 
 The app validates the reading timestamp, checks its age, determines the display and optional alerts, and sends the result to the clock. Display commands expire so an old reading is not intended to remain indefinitely when delivery stops.
